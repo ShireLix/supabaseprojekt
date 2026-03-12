@@ -10,6 +10,41 @@
   <!-- Az oldal címe a böngésző fülön -->
   <title>Supabase Notes – mini projekt</title>
 
+   <style>
+        body {
+            background-color: lightblue;
+        }
+
+        h1 {
+            color: darkblue;
+            text-align: center;
+        }
+
+        p {
+            color: black;
+            font-size: 18px;
+        }
+
+     .px-4 {
+    padding-inline: calc(var(--spacing, 0.25rem) * 4);
+  }
+  .py-3 {
+    padding-block: calc(var(--spacing, 0.25rem) * 3);
+  }
+  .text-white {
+    color: var(--color-white, #fff);
+  }
+  .hover\:bg-blue-400 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-blue-400, oklch(70.7% 0.165 254.624));
+      }
+    }
+  }
+}
+    </style>
+  <link rel="stylesheet" href="/build.css" />
+
   <!-- Supabase JavaScript könyvtár betöltése CDN-ről -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -20,6 +55,8 @@
 
   <!-- Új jegyzet létrehozása -->
   <h2>Új jegyzet</h2>
+
+      <button class="flex items-center bg-blue-500 px-4 py-3 text-white hover:bg-blue-400"></button>
 
   <!-- Űrlap új jegyzet mentéséhez -->
   <form id="noteForm" style="display:grid; gap:10px;">
@@ -147,4 +184,5 @@
     loadNotes();
   </script>
 </body>
+
 </html>
