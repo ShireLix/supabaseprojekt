@@ -6,77 +6,118 @@
   <title>Supabase Notes – mini projekt</title>
 
   <!-- Tailwind CSS CDN -->
-  <script src="[cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            },
+          },
+          boxShadow: {
+            soft: '0 10px 30px rgba(15, 23, 42, 0.10)',
+            glow: '0 0 0 1px rgba(255,255,255,0.06), 0 20px 60px rgba(99,102,241,0.20)',
+          },
+          backgroundImage: {
+            'hero-grid':
+              'radial-gradient(circle at top left, rgba(99,102,241,0.24), transparent 30%), radial-gradient(circle at top right, rgba(59,130,246,0.18), transparent 28%), radial-gradient(circle at bottom left, rgba(129,140,248,0.14), transparent 26%)',
+          },
+        },
+      },
+    };
+  </script>
   
   <!-- Supabase JavaScript könyvtár -->
-  <script src="[cdn.jsdelivr.net](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
-<body class="bg-gray-100 min-h-screen py-8 px-4">
-  <div class="max-w-2xl mx-auto">
+<body class="min-h-screen bg-slate-950 bg-hero-grid text-white py-8 px-4 sm:px-6 lg:px-8">
+  <div class="pointer-events-none fixed inset-0 overflow-hidden">
+    <div class="absolute -top-24 right-[-120px] h-80 w-80 rounded-full bg-brand-500/20 blur-3xl"></div>
+    <div class="absolute top-1/3 left-[-80px] h-72 w-72 rounded-full bg-blue-500/10 blur-3xl"></div>
+    <div class="absolute bottom-[-100px] left-1/4 h-80 w-80 rounded-full bg-violet-500/10 blur-3xl"></div>
+  </div>
+
+  <div class="relative max-w-5xl mx-auto">
     
     <!-- Főcím -->
-    <h1 class="text-3xl font-bold text-gray-800 mb-8 flex items-center gap-2">
-      📝 Supabase Notes – mini projekt
+    <h1 class="mb-10 text-center text-4xl sm:text-5xl font-black tracking-tight text-white">
+      <span class="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 shadow-glow backdrop-blur-md">
+        <span class="text-3xl">📝</span>
+        <span>Supabase Notes – mini projekt</span>
+      </span>
     </h1>
 
-    <!-- Új jegyzet kártya -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-      <h2 class="text-xl font-semibold text-gray-700 mb-4">Új jegyzet</h2>
+    <div class="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] items-start">
+      <!-- Új jegyzet kártya -->
+      <div class="rounded-3xl border border-white/10 bg-white/10 shadow-glow backdrop-blur-xl p-6 sm:p-8">
+        <h2 class="mb-6 text-2xl font-bold text-white">Új jegyzet</h2>
 
-      <form id="noteForm" class="space-y-4">
-        <!-- Cím input -->
-        <div>
-          <label for="title" class="block text-sm font-medium text-gray-600 mb-1">Cím</label>
-          <input 
-            id="title" 
-            type="text"
-            placeholder="Add meg a jegyzet címét" 
-            required
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-          />
+        <form id="noteForm" class="space-y-5">
+          <!-- Cím input -->
+          <div>
+            <label for="title" class="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-white/70">Cím</label>
+            <input 
+              id="title" 
+              type="text"
+              placeholder="Add meg a jegyzet címét" 
+              required
+              class="w-full rounded-2xl border border-white/10 bg-slate-900/70 px-5 py-3.5 text-white placeholder:text-white/35 shadow-soft outline-none transition duration-200 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/20"
+            />
+          </div>
+
+          <!-- Tartalom textarea -->
+          <div>
+            <label for="content" class="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-white/70">Tartalom</label>
+            <textarea 
+              id="content" 
+              placeholder="Írd ide a jegyzet szövegét..." 
+              rows="4" 
+              required
+              class="w-full rounded-2xl border border-white/10 bg-slate-900/70 px-5 py-3.5 text-white placeholder:text-white/35 shadow-soft outline-none transition duration-200 resize-none focus:border-brand-400 focus:ring-4 focus:ring-brand-500/20"
+            ></textarea>
+          </div>
+
+          <!-- Mentés gomb -->
+          <button 
+            type="submit"
+            class="group w-full rounded-2xl bg-gradient-to-r from-brand-500 to-blue-500 px-4 py-3.5 text-base font-bold text-white shadow-lg shadow-brand-900/30 transition duration-300 hover:scale-[1.01] hover:from-brand-400 hover:to-blue-400 active:scale-[0.99] flex items-center justify-center gap-2"
+          >
+            <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Mentés
+          </button>
+        </form>
+      </div>
+
+      <!-- Jegyzetek lista -->
+      <div class="rounded-3xl border border-white/10 bg-white/5 shadow-soft backdrop-blur-xl p-6 sm:p-8">
+        <h2 class="mb-6 text-2xl font-bold text-white">Jegyzetek</h2>
+        <div id="list" class="space-y-4">
+          <!-- Itt jelennek meg a jegyzetek -->
         </div>
-
-        <!-- Tartalom textarea -->
-        <div>
-          <label for="content" class="block text-sm font-medium text-gray-600 mb-1">Tartalom</label>
-          <textarea 
-            id="content" 
-            placeholder="Írd ide a jegyzet szövegét..." 
-            rows="4" 
-            required
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-none"
-          ></textarea>
-        </div>
-
-        <!-- Mentés gomb -->
-        <button 
-          type="submit"
-          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-          Mentés
-        </button>
-      </form>
-    </div>
-
-    <!-- Elválasztó -->
-    <hr class="border-gray-300 mb-8" />
-
-    <!-- Jegyzetek lista -->
-    <div>
-      <h2 class="text-xl font-semibold text-gray-700 mb-4">Jegyzetek</h2>
-      <div id="list" class="space-y-4">
-        <!-- Itt jelennek meg a jegyzetek -->
       </div>
     </div>
 
   </div>
 
   <script>
-    const SUPABASE_URL = "[deyljxciuhkpyipfyadt.supabase.co](https://deyljxciuhkpyipfyadt.supabase.co)";
+    const SUPABASE_URL = "https://deyljxciuhkpyipfyadt.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRleWxqeGNpdWhrcHlpcGZ5YWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1MjY4ODgsImV4cCI6MjA4ODEwMjg4OH0.H-1WFGJz6JwawOPUMZZIlZGllSyk_f3oxlWHWBlXPS4";
     
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -112,9 +153,9 @@
 
       if (error) {
         listEl.innerHTML = `
-          <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            <p class="font-medium">Hiba történt</p>
-            <p class="text-sm">${escapeHtml(error.message)}</p>
+          <div class="rounded-2xl border border-red-400/20 bg-red-500/10 px-5 py-4 text-red-100 shadow-soft backdrop-blur-md">
+            <p class="font-semibold">Hiba történt</p>
+            <p class="mt-1 text-sm text-red-100/80">${escapeHtml(error.message)}</p>
           </div>
         `;
         return;
@@ -122,23 +163,23 @@
 
       if (!data || data.length === 0) {
         listEl.innerHTML = `
-          <div class="bg-gray-50 border border-gray-200 text-gray-600 px-4 py-8 rounded-lg text-center">
-            <svg class="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          <div class="rounded-2xl border border-white/10 bg-slate-900/60 px-5 py-10 text-center text-white/70 shadow-soft">
+            <svg class="w-14 h-14 mx-auto mb-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
-            <p>Még nincs egyetlen jegyzet sem.</p>
-            <p class="text-sm">Hozz létre egyet a fenti űrlap segítségével!</p>
+            <p class="text-lg font-semibold text-white">Még nincs egyetlen jegyzet sem.</p>
+            <p class="mt-1 text-sm text-white/50">Hozz létre egyet a bal oldali űrlap segítségével!</p>
           </div>
         `;
         return;
       }
 
       listEl.innerHTML = data.map(note => `
-        <div class="bg-white rounded-lg shadow-md p-5 hover:shadow-lg transition duration-200 border-l-4 border-blue-500">
-          <h3 class="text-lg font-semibold text-gray-800 mb-2">${escapeHtml(note.title)}</h3>
-          <p class="text-gray-600 mb-3 whitespace-pre-wrap">${escapeHtml(note.content)}</p>
-          <div class="flex items-center text-sm text-gray-400">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="group rounded-2xl border border-white/10 bg-slate-900/70 p-5 shadow-soft transition duration-300 hover:-translate-y-0.5 hover:border-brand-400/40 hover:bg-slate-900/90 hover:shadow-glow">
+          <h3 class="mb-2 text-lg font-bold text-white">${escapeHtml(note.title)}</h3>
+          <p class="mb-4 whitespace-pre-wrap leading-7 text-white/70">${escapeHtml(note.content)}</p>
+          <div class="flex items-center text-sm font-medium text-white/40">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             ${escapeHtml(formatDate(note.created_at))}
