@@ -4,8 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Supabase Notes – mini projekt</title>
-
-  <!-- Tailwind CSS CDN -->
+    <link rel="icon" type="image/x-icon" href="https://cdn.brandfetch.io/supabase.io/fallback/lettermark/theme/dark/h/256/w/256/icon?c=1bfwsmEH20zzEfSNTed">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -36,13 +35,150 @@
             'hero-grid':
               'radial-gradient(circle at top left, rgba(99,102,241,0.24), transparent 30%), radial-gradient(circle at top right, rgba(59,130,246,0.18), transparent 28%), radial-gradient(circle at bottom left, rgba(129,140,248,0.14), transparent 26%)',
           },
+          keyframes: {
+            popIn: {
+              '0%': { transform: 'scale(0) rotate(-90deg)', opacity: '0' },
+              '70%': { transform: 'scale(1.2) rotate(5deg)', opacity: '1' },
+              '100%': { transform: 'scale(1) rotate(0deg)', opacity: '1' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'scale(0.92)' },
+              '100%': { opacity: '1', transform: 'scale(1)' },
+            },
+            liquidSuccess: {
+              '0%': { borderRadius: '12px', background: 'rgba(239,68,68,0.15)' },
+              '40%': { borderRadius: '40% 60% 55% 45% / 50% 45% 55% 50%', background: 'rgba(34,197,94,0.08)' },
+              '70%': { borderRadius: '55% 45% 40% 60% / 45% 55% 50% 50%', background: 'rgba(34,197,94,0.15)' },
+              '100%': { borderRadius: '12px', background: 'rgba(34,197,94,0.12)' },
+            },
+            drawCheck: {
+              '0%': { strokeDashoffset: '50' },
+              '100%': { strokeDashoffset: '0' },
+            },
+            noteOut: {
+              '0%': { opacity: '1', transform: 'translateX(0) scaleY(1)', maxHeight: '200px' },
+              '40%': { opacity: '0', transform: 'translateX(60px) scaleY(0.8)', maxHeight: '200px' },
+              '100%': { opacity: '0', transform: 'translateX(60px) scaleY(0)', maxHeight: '0', marginBottom: '0', padding: '0' },
+            },
+          },
+          animation: {
+            popIn: 'popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+            fadeIn: 'fadeIn 0.22s ease forwards',
+            liquidSuccess: 'liquidSuccess 0.7s ease forwards',
+            noteOut: 'noteOut 0.5s ease forwards',
+          },
         },
       },
     };
   </script>
-  
-  <!-- Supabase JavaScript könyvtár -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    @keyframes popIn {
+      0% { transform: scale(0) rotate(-90deg); opacity: 0; }
+      70% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    @keyframes fadeInModal {
+      0% { opacity: 0; transform: scale(0.92) translateY(8px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes liquidSuccess {
+      0%   { border-radius: 12px; background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.3); }
+      30%  { border-radius: 40% 60% 55% 45% / 50% 45% 55% 50%; background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.2); }
+      60%  { border-radius: 55% 45% 40% 60% / 45% 55% 50% 50%; background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.4); }
+      100% { border-radius: 12px; background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.4); }
+    }
+    @keyframes drawCheck {
+      0%   { stroke-dashoffset: 50; }
+      100% { stroke-dashoffset: 0; }
+    }
+    @keyframes noteSlideOut {
+      0%   { opacity: 1; transform: translateX(0) scale(1); max-height: 300px; margin-bottom: 1rem; }
+      50%  { opacity: 0; transform: translateX(48px) scale(0.95); max-height: 300px; }
+      100% { opacity: 0; transform: translateX(48px) scale(0.9); max-height: 0; margin-bottom: 0; overflow: hidden; }
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #ef4444;
+      border: 2px solid rgba(15,23,42,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transform: scale(0) rotate(-90deg);
+      transition: opacity 0.2s, box-shadow 0.2s;
+      animation: none;
+      z-index: 10;
+    }
+
+    .note-card:hover .delete-btn {
+      animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    .delete-btn:hover {
+      background: #dc2626;
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.35);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-box {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 360px;
+      width: 90%;
+      animation: fadeInModal 0.22s ease forwards;
+      transition: background 0.7s ease, border-color 0.7s ease, border-radius 0.7s ease;
+    }
+
+    .modal-box.success {
+      animation: liquidSuccess 0.7s ease forwards;
+    }
+
+    .note-card {
+      position: relative;
+      overflow: visible !important;
+    }
+
+    .note-card.removing {
+      animation: noteSlideOut 0.5s ease forwards;
+      pointer-events: none;
+    }
+
+    .check-svg path {
+      stroke-dasharray: 50;
+      stroke-dashoffset: 50;
+    }
+
+    .check-svg.animate path {
+      animation: drawCheck 0.4s 0.15s ease forwards;
+    }
+
+    body.page-fade-out {
+      opacity: 0;
+      transition: opacity 0.18s ease;
+    }
+  </style>
 </head>
 
 <body class="min-h-screen bg-slate-950 bg-hero-grid text-white py-8 px-4 sm:px-6 lg:px-8">
@@ -52,51 +188,84 @@
     <div class="absolute bottom-[-100px] left-1/4 h-80 w-80 rounded-full bg-violet-500/10 blur-3xl"></div>
   </div>
 
+<!-- Mentés siker modal -->
+<div id="saveSuccessModal" class="modal-backdrop" style="display:none;">
+  <div class="modal-box success" id="saveSuccessBox">
+    <div class="flex flex-col items-center justify-center py-2">
+      <div style="width:64px;height:64px;border-radius:50%;background:rgba(34,197,94,0.15);border:2px solid rgba(34,197,94,0.4);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+        <svg class="check-svg" id="saveCheckSvg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M7 16.5L13 22.5L25 10" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p class="text-green-400 font-bold text-base">Sikeres felvitel!</p>
+    </div>
+  </div>
+</div>
+
+  <div id="deleteModal" class="modal-backdrop" style="display:none;">
+    <div class="modal-box" id="modalBox">
+      <div id="modalQuestion">
+        <div class="flex items-center justify-center mb-4">
+          <div style="width:52px;height:52px;border-radius:50%;background:rgba(239,68,68,0.15);border:1.5px solid rgba(239,68,68,0.3);display:flex;align-items:center;justify-content:center;">
+            <svg width="24" height="24" fill="none" stroke="#ef4444" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </div>
+        </div>
+        <h3 class="text-center text-lg font-bold text-white mb-1">Törlés megerősítése</h3>
+        <p class="text-center text-sm text-white/60 mb-6">Biztosan törölni szeretnéd ezt a jegyzetet? Ez a művelet nem vonható vissza.</p>
+        <div class="flex gap-3">
+          <button id="cancelBtn" onclick="closeModal()" class="flex-1 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white/80 transition hover:bg-white/10 active:scale-95">
+            Mégsem
+          </button>
+          <button id="confirmBtn" onclick="confirmDelete()" class="flex-1 rounded-xl bg-red-500 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-600 active:scale-95 flex items-center justify-center gap-2">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+            Igen, törlöm
+          </button>
+        </div>
+      </div>
+
+      <div id="modalSuccess" style="display:none;">
+        <div class="flex flex-col items-center justify-center py-2">
+          <div id="successCircle" style="width:64px;height:64px;border-radius:50%;background:rgba(34,197,94,0.15);border:2px solid rgba(34,197,94,0.4);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+            <svg class="check-svg" id="checkSvg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <path d="M7 16.5L13 22.5L25 10" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <p class="text-green-400 font-bold text-base">Sikeresen törölve!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="relative max-w-5xl mx-auto">
-    
-    <!-- Főcím -->
     <h1 class="mb-10 text-center text-4xl sm:text-5xl font-black tracking-tight text-white">
       <span class="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 shadow-glow backdrop-blur-md">
         <span class="text-3xl">📝</span>
         <span>Supabase Notes – mini projekt</span>
+                <span class="text-3xl">📝</span>
+
       </span>
     </h1>
 
     <div class="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] items-start">
-      <!-- Új jegyzet kártya -->
       <div class="rounded-3xl border border-white/10 bg-white/10 shadow-glow backdrop-blur-xl p-6 sm:p-8">
         <h2 class="mb-6 text-2xl font-bold text-white">Új jegyzet</h2>
-
         <form id="noteForm" class="space-y-5">
-          <!-- Cím input -->
           <div>
             <label for="title" class="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-white/70">Cím</label>
-            <input 
-              id="title" 
-              type="text"
-              placeholder="Add meg a jegyzet címét" 
-              required
-              class="w-full rounded-2xl border border-white/10 bg-slate-900/70 px-5 py-3.5 text-white placeholder:text-white/35 shadow-soft outline-none transition duration-200 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/20"
-            />
+            <input id="title" type="text" placeholder="Add meg a jegyzet címét" required
+              class="w-full rounded-2xl border border-white/10 bg-slate-900/70 px-5 py-3.5 text-white placeholder:text-white/35 shadow-soft outline-none transition duration-200 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/20"/>
           </div>
-
-          <!-- Tartalom textarea -->
           <div>
             <label for="content" class="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-white/70">Tartalom</label>
-            <textarea 
-              id="content" 
-              placeholder="Írd ide a jegyzet szövegét..." 
-              rows="4" 
-              required
-              class="w-full rounded-2xl border border-white/10 bg-slate-900/70 px-5 py-3.5 text-white placeholder:text-white/35 shadow-soft outline-none transition duration-200 resize-none focus:border-brand-400 focus:ring-4 focus:ring-brand-500/20"
-            ></textarea>
+            <textarea id="content" placeholder="Írd ide a jegyzet szövegét..." rows="4" required
+              class="w-full rounded-2xl border border-white/10 bg-slate-900/70 px-5 py-3.5 text-white placeholder:text-white/35 shadow-soft outline-none transition duration-200 resize-none focus:border-brand-400 focus:ring-4 focus:ring-brand-500/20"></textarea>
           </div>
-
-          <!-- Mentés gomb -->
-          <button 
-            type="submit"
-            class="group w-full rounded-2xl bg-gradient-to-r from-brand-500 to-blue-500 px-4 py-3.5 text-base font-bold text-white shadow-lg shadow-brand-900/30 transition duration-300 hover:scale-[1.01] hover:from-brand-400 hover:to-blue-400 active:scale-[0.99] flex items-center justify-center gap-2"
-          >
+          <button type="submit"
+            class="group w-full rounded-2xl bg-gradient-to-r from-brand-500 to-blue-500 px-4 py-3.5 text-base font-bold text-white shadow-lg shadow-brand-900/30 transition duration-300 hover:scale-[1.01] hover:from-brand-400 hover:to-blue-400 active:scale-[0.99] flex items-center justify-center gap-2">
             <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
             </svg>
@@ -105,25 +274,24 @@
         </form>
       </div>
 
-      <!-- Jegyzetek lista -->
       <div class="rounded-3xl border border-white/10 bg-white/5 shadow-soft backdrop-blur-xl p-6 sm:p-8">
         <h2 class="mb-6 text-2xl font-bold text-white">Jegyzetek</h2>
-        <div id="list" class="space-y-4">
-          <!-- Itt jelennek meg a jegyzetek -->
-        </div>
+        <div id="list" class="space-y-4"></div>
       </div>
     </div>
-
   </div>
 
   <script>
     const SUPABASE_URL = "https://deyljxciuhkpyipfyadt.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRleWxqeGNpdWhrcHlpcGZ5YWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1MjY4ODgsImV4cCI6MjA4ODEwMjg4OH0.H-1WFGJz6JwawOPUMZZIlZGllSyk_f3oxlWHWBlXPS4";
-    
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const form = document.getElementById("noteForm");
     const listEl = document.getElementById("list");
+
+    let pendingDeleteId = null;
+    let pendingDeleteEl = null;
+    let isReloading = false;
 
     function escapeHtml(text) {
       const div = document.createElement("div");
@@ -131,16 +299,114 @@
       return div.innerHTML;
     }
 
-    // Dátum formázása olvashatóbb formátumra
     function formatDate(dateString) {
       const date = new Date(dateString);
       return date.toLocaleDateString('hu-HU', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        year: 'numeric', month: 'long', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
       });
+    }
+
+    function smoothReload() {
+      if (isReloading) return;
+      isReloading = true;
+
+      document.body.classList.add("page-fade-out");
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 180);
+    }
+
+    function openDeleteModal(id, el) {
+      pendingDeleteId = id;
+      pendingDeleteEl = el;
+
+      const oldBox = document.getElementById('modalBox');
+      const newBox = oldBox.cloneNode(true);
+      oldBox.parentNode.replaceChild(newBox, oldBox);
+
+      newBox.querySelector('#cancelBtn').onclick = closeModal;
+      newBox.querySelector('#confirmBtn').onclick = confirmDelete;
+
+      newBox.querySelector('#modalQuestion').style.display = '';
+      newBox.querySelector('#modalSuccess').style.display = 'none';
+      newBox.classList.remove('success');
+
+      const checkSvg = newBox.querySelector('#checkSvg');
+      checkSvg.classList.remove('animate');
+
+      document.getElementById('deleteModal').style.display = 'flex';
+    }
+
+function showSaveSuccess() {
+  const modal = document.getElementById("saveSuccessModal");
+  const svg = document.getElementById("saveCheckSvg");
+
+  svg.classList.remove("animate");
+
+  modal.style.display = "flex";
+
+  setTimeout(() => {
+    svg.classList.add("animate");
+  }, 60);
+
+  setTimeout(() => {
+    modal.style.display = "none";
+  }, 1100);
+}
+
+    function closeModal() {
+      if (isReloading) return;
+      document.getElementById('deleteModal').style.display = 'none';
+      pendingDeleteId = null;
+      pendingDeleteEl = null;
+    }
+
+    async function confirmDelete() {
+      if (!pendingDeleteId || isReloading) return;
+
+      const confirmBtn = document.getElementById('confirmBtn');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const modalQuestion = document.getElementById('modalQuestion');
+      const modalSuccess = document.getElementById('modalSuccess');
+      const modalBox = document.getElementById('modalBox');
+
+      confirmBtn.disabled = true;
+      cancelBtn.disabled = true;
+
+      const { error } = await supabaseClient
+        .from("Notes")
+        .delete()
+        .eq("id", pendingDeleteId);
+
+      if (error) {
+        alert("Hiba a törlés során: " + error.message);
+        confirmBtn.disabled = false;
+        cancelBtn.disabled = false;
+        return;
+      }
+
+      modalQuestion.style.display = 'none';
+      modalSuccess.style.display = '';
+      modalBox.classList.add('success');
+
+      setTimeout(() => {
+        const svg = document.getElementById('checkSvg');
+        if (svg) svg.classList.add('animate');
+      }, 80);
+
+      const cardEl = pendingDeleteEl;
+      pendingDeleteId = null;
+      pendingDeleteEl = null;
+
+      if (cardEl && cardEl.isConnected) {
+        cardEl.classList.add('removing');
+      }
+
+      setTimeout(() => {
+        smoothReload();
+      }, 900);
     }
 
     async function loadNotes() {
@@ -149,15 +415,12 @@
         .select("id, title, content, created_at")
         .order("created_at", { ascending: false });
 
-      console.log("SELECT:", data, error);
-
       if (error) {
         listEl.innerHTML = `
           <div class="rounded-2xl border border-red-400/20 bg-red-500/10 px-5 py-4 text-red-100 shadow-soft backdrop-blur-md">
             <p class="font-semibold">Hiba történt</p>
             <p class="mt-1 text-sm text-red-100/80">${escapeHtml(error.message)}</p>
-          </div>
-        `;
+          </div>`;
         return;
       }
 
@@ -169,14 +432,18 @@
             </svg>
             <p class="text-lg font-semibold text-white">Még nincs egyetlen jegyzet sem.</p>
             <p class="mt-1 text-sm text-white/50">Hozz létre egyet a bal oldali űrlap segítségével!</p>
-          </div>
-        `;
+          </div>`;
         return;
       }
 
       listEl.innerHTML = data.map(note => `
-        <div class="group rounded-2xl border border-white/10 bg-slate-900/70 p-5 shadow-soft transition duration-300 hover:-translate-y-0.5 hover:border-brand-400/40 hover:bg-slate-900/90 hover:shadow-glow">
-          <h3 class="mb-2 text-lg font-bold text-white">${escapeHtml(note.title)}</h3>
+        <div class="note-card group rounded-2xl border border-white/10 bg-slate-900/70 p-5 shadow-soft transition duration-300 hover:-translate-y-0.5 hover:border-brand-400/40 hover:bg-slate-900/90 hover:shadow-glow" data-id="${note.id}">
+          <button type="button" class="delete-btn" title="Törlés" onclick="openDeleteModal('${note.id}', this.closest('.note-card'))">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+              <line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/>
+            </svg>
+          </button>
+          <h3 class="mb-2 text-lg font-bold text-white pr-4">${escapeHtml(note.title)}</h3>
           <p class="mb-4 whitespace-pre-wrap leading-7 text-white/70">${escapeHtml(note.content)}</p>
           <div class="flex items-center text-sm font-medium text-white/40">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,47 +456,46 @@
     }
 
     form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+  e.preventDefault();
 
-      const title = document.getElementById("title").value.trim();
-      const content = document.getElementById("content").value.trim();
+  const title = document.getElementById("title").value.trim();
+  const content = document.getElementById("content").value.trim();
 
-      if (!title || !content) {
-        alert("Mindkét mező kitöltése kötelező.");
-        return;
-      }
+  if (!title || !content) {
+    alert("Mindkét mező kitöltése kötelező.");
+    return;
+  }
 
-      // Gomb letiltása mentés közben
-      const submitBtn = form.querySelector('button[type="submit"]');
-      const originalText = submitBtn.innerHTML;
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = `
-        <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        Mentés...
-      `;
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const originalText = submitBtn.innerHTML;
 
-      const { data, error } = await supabaseClient
-        .from("Notes")
-        .insert([{ title, content }])
-        .select();
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = `
+    <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    Mentés...`;
 
-      console.log("INSERT:", data, error);
+  const { error } = await supabaseClient
+    .from("Notes")
+    .insert([{ title, content }]);
 
-      // Gomb visszaállítása
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = originalText;
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = originalText;
 
-      if (error) {
-        alert("Hiba történt: " + error.message);
-        return;
-      }
+  if (error) {
+    alert("Hiba történt: " + error.message);
+    return;
+  }
 
-      // Sikeres mentés visszajelzés
-      form.reset();
-      loadNotes();
+  form.reset();
+  await loadNotes();
+  showSaveSuccess();
+});
+
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
     });
 
     loadNotes();
